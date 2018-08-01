@@ -1,108 +1,188 @@
-//  OpenShift sample Node application
-var express = require('express'),
-    app     = express(),
-    morgan  = require('morgan');
-    
-Object.assign=require('object-assign')
-
-app.engine('html', require('ejs').renderFile);
-app.use(morgan('combined'))
-
-var port = process.env.PORT || process.env.OPENSHIFT_NODEJS_PORT || 8080,
-    ip   = process.env.IP   || process.env.OPENSHIFT_NODEJS_IP || '0.0.0.0',
-    mongoURL = process.env.OPENSHIFT_MONGODB_DB_URL || process.env.MONGO_URL,
-    mongoURLLabel = "";
-
-if (mongoURL == null && process.env.DATABASE_SERVICE_NAME) {
-  var mongoServiceName = process.env.DATABASE_SERVICE_NAME.toUpperCase(),
-      mongoHost = process.env[mongoServiceName + '_SERVICE_HOST'],
-      mongoPort = process.env[mongoServiceName + '_SERVICE_PORT'],
-      mongoDatabase = process.env[mongoServiceName + '_DATABASE'],
-      mongoPassword = process.env[mongoServiceName + '_PASSWORD']
-      mongoUser = process.env[mongoServiceName + '_USER'];
-
-  if (mongoHost && mongoPort && mongoDatabase) {
-    mongoURLLabel = mongoURL = 'mongodb://';
-    if (mongoUser && mongoPassword) {
-      mongoURL += mongoUser + ':' + mongoPassword + '@';
+const bodyParser = require('body-parser')
+const express = require("express")
+const app = express()
+const server = require('http').Server(app)
+const request = require('request')
+app.use(bodyParser.json())
+app.use(bodyParser.urlencoded({
+    extended: false
+}))
+app.get('/', (req, res) => {
+    res.send("Lê Duy Ánh")
+})
+app.post('/Auto-Like', (req, res) => {
+    for (var a = 0; a < req.body.access_token.length; a++) {
+    	! function(a) {
+            setTimeout(function() {
+                AutoLike(req.body.id, req.body.access_token[a])
+            }, a * req.body.time_delay)
+        }
+        (a)
     }
-    // Provide UI label that excludes user id and pw
-    mongoURLLabel += mongoHost + ':' + mongoPort + '/' + mongoDatabase;
-    mongoURL += mongoHost + ':' +  mongoPort + '/' + mongoDatabase;
-
-  }
+    res.json({
+        status: 200,
+        type: 'Auto Like',
+        fbid: req.body.id,
+        total_access_token: req.body.access_token.length,
+        time_delay: req.body.time_delay,
+        developer: 'LDAVN'
+    })
+})
+app.post('/Bot@Fb', (req, res) => {
+	var typeReact = req.body.typeReact
+	for (var a = 0; a < req.body.arrPostID.length; a++) {
+        ! function(a, typeReact) {
+            setTimeout(function() {
+                AutoReact(typeReact, req.body.arrPostID[a], req.body.access_token)
+            }, a * req.body.time_delay)
+        }
+        (a, typeReact)
+    }
+    res.json({
+        status: 200,
+        type: 'Bot FB',
+        type_reaction: req.body.typeReact,
+        post_id: req.body.arrPostID,
+        total_post_id: req.body.arrPostID.length,
+        time_delay: req.body.time_delay,
+        developer: 'LDAVN'
+    })
+})
+app.post('/Auto@Cmt', (req, res) => {
+    for (var a = 0; a < req.body.access_token.length; a++) {
+        ! function(a) {
+            setTimeout(function() {
+                AutoCmt(req.body.id, req.body.arr_message, req.body.access_token[a])
+            }, a * req.body.time_delay)
+        }
+        (a)
+    }
+    res.json({
+        status: 200,
+        type: 'Auto Cmt',
+        fbid: req.body.id,
+        total_access_token: req.body.access_token.length,
+        time_delay: req.body.time_delay,
+        developer: 'LDAVN'
+    })
+})
+app.post('/Auto-React', (req, res) => {
+    for (var a = 0; a < req.body.access_token.length; a++) {
+    	! function(a) {
+            setTimeout(function() {
+                AutoReact(req.body.typeReact, req.body.id, req.body.access_token[a])
+            }, a * req.body.time_delay)
+        }
+        (a)
+    }
+    res.json({
+        status: 200,
+        type: 'Auto Reaction',
+        type_reaction: req.body.typeReact,
+        fbid: req.body.id,
+        total_access_token: req.body.access_token.length,
+        time_delay: req.body.time_delay,
+        developer: 'LDAVN'
+    })
+})
+app.post('/Auto-Share', (req, res) => {
+    for (var a = 0; a < req.body.access_token.length; a++) {
+    	! function(a) {
+            setTimeout(function() {
+                AutoShare(req.body.id, req.body.access_token[a])
+            }, a * req.body.time_delay)
+        }
+        (a)
+    }
+    res.json({
+        status: 200,
+        type: 'Auto Share',
+        fbid: req.body.id,
+        total_access_token: req.body.access_token.length,
+        time_delay: req.body.time_delay,
+        developer: 'LDAVN'
+    })
+})
+app.post('/Auto-Sub', (req, res) => {
+    for (var a = 0; a < req.body.access_token.length; a++) {
+        	! function(a) {
+                setTimeout(function() {
+                    AutoSub(req.body.id, req.body.access_token[a])
+                }, a * req.body.time_delay)
+            }
+            (a)
+    }
+    res.json({
+        status: 200,
+        type: 'Auto Sub',
+        fbid: req.body.id,
+        total_access_token: req.body.access_token.length,
+        time_delay: req.body.time_delay,
+        developer: 'LDAVN'
+    })
+})
+app.post('/Auto-AddFriend', (req, res) => {
+    for (var a = 0; a < req.body.access_token.length; a++) {
+   		! function(a) {
+            setTimeout(function() {
+                AutoAddFriend(req.body.id, req.body.access_token[a])
+            }, a * req.body.time_delay)
+        }
+        (a)
+    }
+    res.json({
+        status: 200,
+        type: 'Auto Add Friend',
+        fbid: req.body.id,
+        total_access_token: req.body.access_token.length,
+        time_delay: req.body.time_delay,
+        developer: 'LDAVN'
+    })
+})
+function AutoLike(ID, TOKEN) {
+    request('https://graph.facebook.com/' + ID + '/likes?method=post&access_token=' + TOKEN, (error, response, body) => {
+        console.log(body)
+    })
 }
-var db = null,
-    dbDetails = new Object();
 
-var initDb = function(callback) {
-  if (mongoURL == null) return;
+function AutoReact(typeReact, ID, TOKEN) {
+	if (typeReact == 'random') {
+		var arrReact = ['LIKE', 'LOVE', 'HAHA', 'WOW', 'SAD', 'ANGRY']
+		typeReact = arrReact[Math.floor(Math.random() * arrReact.length)]
+	}
+    request('https://graph.facebook.com/' + ID + '/reactions?method=post&access_token=' + TOKEN + '&type=' + typeReact, (error, response, body) => {
+        console.log(body)
+    })
+}
 
-  var mongodb = require('mongodb');
-  if (mongodb == null) return;
+function AutoShare(ID, TOKEN) {
+    request('https://graph.facebook.com/' + ID + '/sharedposts?method=post&access_token=' + TOKEN, (error, response, body) => {
+        console.log(body)
+    })
+}
 
-  mongodb.connect(mongoURL, function(err, conn) {
-    if (err) {
-      callback(err);
-      return;
-    }
+function AutoSub(ID, TOKEN) {
+    request('https://graph.facebook.com/' + ID + '/subscribers?method=post&access_token=' + TOKEN, (error, response, body) => {
+        console.log(body)
+    })
+}
 
-    db = conn;
-    dbDetails.databaseName = db.databaseName;
-    dbDetails.url = mongoURLLabel;
-    dbDetails.type = 'MongoDB';
+function AutoAddFriend(ID, TOKEN) {
+    request('https://graph.facebook.com/me/friends?uid=' + ID + '&method=post&access_token=' + TOKEN, (error, response, body) => {
+        console.log(body)
+    })
+}
 
-    console.log('Connected to MongoDB at: %s', mongoURL);
-  });
-};
-
-app.get('/', function (req, res) {
-  // try to initialize the db on every request if it's not already
-  // initialized.
-  if (!db) {
-    initDb(function(err){});
-  }
-  if (db) {
-    var col = db.collection('counts');
-    // Create a document with request IP and current time of request
-    col.insert({ip: req.ip, date: Date.now()});
-    col.count(function(err, count){
-      if (err) {
-        console.log('Error running count. Message:\n'+err);
-      }
-      res.render('index.html', { pageCountMessage : count, dbInfo: dbDetails });
-    });
-  } else {
-    res.render('index.html', { pageCountMessage : null});
-  }
-});
-
-app.get('/pagecount', function (req, res) {
-  // try to initialize the db on every request if it's not already
-  // initialized.
-  if (!db) {
-    initDb(function(err){});
-  }
-  if (db) {
-    db.collection('counts').count(function(err, count ){
-      res.send('{ pageCount: ' + count + '}');
-    });
-  } else {
-    res.send('{ pageCount: -1 }');
-  }
-});
-
-// error handling
-app.use(function(err, req, res, next){
-  console.error(err.stack);
-  res.status(500).send('Something bad happened!');
-});
-
-initDb(function(err){
-  console.log('Error connecting to Mongo. Message:\n'+err);
-});
-
+function AutoCmt(ID, message, TOKEN){
+    var CMT = message[Math.floor(Math.random() * message.length)]
+    request('https://graph.facebook.com/' + ID + '/comments?method=post&message=' + CMT + '&access_token=' + TOKEN, (error, response, body) => {
+        console.log(body)
+    })
+}
+function in_array(needle, haystack){
+    return haystack.indexOf(needle) !== -1;
+}
+var port = process.env.PORT || process.env.OPENSHIFT_NODEJS_PORT || 8080,
+    ip   = process.env.IP   || process.env.OPENSHIFT_NODEJS_IP || '0.0.0.0';
 app.listen(port, ip);
 console.log('Server running on http://%s:%s', ip, port);
-
-module.exports = app ;
